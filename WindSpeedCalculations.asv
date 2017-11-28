@@ -1,0 +1,27 @@
+%id	year	month	day	hour	minute	second	wind speed	wind direction
+m = csvread('wind data.csv');
+%% time conversions
+t = m(:,5)*3600+m(:,6)*60+m(:,7);
+t = t-t(1); % normalized, units of seconds
+
+%% wind data
+wind_speed_raw = m(:,8);
+wind_dir_raw = m(:,9);
+
+%%
+
+
+%% data selection
+t_final = 60; % 1 minute
+t=t(t<=t_final);
+wind_speed_raw=wind_speed_raw(t<=t_final);
+
+freq = zeros(t_final,1);
+for i=0:1:t_final
+   time_index = t == i;
+   transitions = sum(diff(wind_speed_raw(time_index)));
+   freq(i+1) = transitions; % zero crossings per second
+end
+t=(0:1:t_final)'; % time data free of duplications
+
+plot(t,freq);
